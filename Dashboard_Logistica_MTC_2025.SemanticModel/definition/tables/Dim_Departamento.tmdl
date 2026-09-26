@@ -1,0 +1,76 @@
+table Dim_Departamento
+	lineageTag: e1cbc14b-ce7d-48bc-bb87-897d0794651e
+
+	column Departamento
+		lineageTag: dbd9453e-f4f2-405f-a976-c346e4bed340
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: Fact_RedVial[DEPARTAMENTO]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Macroregión =
+			
+			VAR Dep =
+			    UPPER(TRIM(Dim_Departamento[Departamento]))
+			RETURN
+			SWITCH(
+			    TRUE(),
+			    ISBLANK(Dep), BLANK(),
+			
+			    Dep IN {"LIMA", "CALLAO"},
+			        "Lima y Callao",
+			
+			    Dep IN {
+			        "AMAZONAS", "CAJAMARCA", "LA LIBERTAD",
+			        "LAMBAYEQUE", "PIURA", "TUMBES"
+			    },
+			        "Norte",
+			
+			    Dep IN {
+			        "ÁNCASH", "ANCASH", "HUANCAVELICA",
+			        "HUÁNUCO", "HUANUCO", "JUNÍN", "JUNIN", "PASCO"
+			    },
+			        "Centro",
+			
+			    Dep IN {
+			        "APURÍMAC", "APURIMAC", "AREQUIPA", "AYACUCHO",
+			        "CUSCO", "ICA", "MOQUEGUA", "PUNO", "TACNA"
+			    },
+			        "Sur",
+			
+			    Dep IN {
+			        "LORETO", "MADRE DE DIOS",
+			        "SAN MARTÍN", "SAN MARTIN", "UCAYALI"
+			    },
+			        "Oriente",
+			
+			    "Sin clasificar"
+			)
+		lineageTag: acc80021-1817-477f-9875-8da8c84f9d11
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column DepartamentoMapa =
+			
+			SWITCH(
+			    Dim_Departamento[Departamento],
+			    "Áncash", "ANCASH",
+			    "Apurímac", "APURIMAC",
+			    "Huánuco", "HUANUCO",
+			    "Junín", "JUNIN",
+			    "San Martín", "SAN MARTIN",
+			    UPPER(Dim_Departamento[Departamento])
+			)
+		lineageTag: 25340f83-2937-4225-b644-7819ef9c666a
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Departamento = calculated
+		mode: import
+		source = DISTINCT(Fact_RedVial[DEPARTAMENTO])
+
+	annotation PBI_Id = bb156e7b96f7488ebd34b85ad7b13b8b
+

@@ -1,0 +1,73 @@
+table Ranking_Departamento
+	lineageTag: e89c412b-58a0-4c8a-8cd6-807160e95681
+
+	measure 'Orden ranking' =
+			
+			VAR Categoria =
+			    SELECTEDVALUE(Ranking_Departamento[DepartamentoRanking])
+			RETURN
+			    IF(
+			        Categoria = "Otros departamentos",
+			        -1,
+			        [Vehículos ranking]
+			    )
+		formatString: 0
+		lineageTag: acaf2d82-dadc-425c-bcac-958dd5342037
+
+	measure 'Color ranking' =
+			
+			VAR Categoria =
+			    SELECTEDVALUE(Ranking_Departamento[DepartamentoRanking])
+			
+			VAR TablaTop10 =
+			    FILTER(
+			        ALLSELECTED(Ranking_Departamento[DepartamentoRanking]),
+			        Ranking_Departamento[DepartamentoRanking] <> "Otros departamentos"
+			            && NOT ISBLANK(CALCULATE([Vehículos ranking]))
+			    )
+			
+			VAR Posicion =
+			    RANKX(
+			        TablaTop10,
+			        CALCULATE([Vehículos ranking]),
+			        ,
+			        DESC,
+			        DENSE
+			    )
+			
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        Categoria = "Otros departamentos", "#BDBDBD",
+			        Posicion = 1, "#B01232",
+			        Posicion <= 3, "#D97A84",
+			        "#EAA1A8"
+			    )
+		lineageTag: 71b423ef-598b-4406-b8d2-effaf21339ee
+
+	column DepartamentoRanking
+		lineageTag: 6edb6c28-af3f-4c1c-9ca7-1aa3691e139a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DepartamentoRanking]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Ranking_Departamento = calculated
+		mode: import
+		source =
+				
+				UNION(
+				    SELECTCOLUMNS(
+				        Dim_Departamento,
+				        "DepartamentoRanking",
+				        Dim_Departamento[Departamento]
+				    ),
+				    ROW(
+				        "DepartamentoRanking",
+				        "Otros departamentos"
+				    )
+				)
+
+	annotation PBI_Id = 673bbd1bc1a147269a8689733abf2eda
+

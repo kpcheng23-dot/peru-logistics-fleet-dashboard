@@ -1,0 +1,179 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "Fluent2-CY26SU08",
+      "reportVersionAtImport": {
+        "visual": "2.12.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "SharedResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "Fluent2-CY26SU08",
+          "path": "BaseThemes/Fluent2-CY26SU08.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "buildings-2-svgrepo-com32388764802124026.png",
+          "path": "buildings-2-svgrepo-com32388764802124026.png",
+          "type": "Image"
+        },
+        {
+          "name": "calendar-alt-svgrepo-com8915086170389022.png",
+          "path": "calendar-alt-svgrepo-com8915086170389022.png",
+          "type": "Image"
+        },
+        {
+          "name": "fuel-14-svgrepo-com6780378572886747.png",
+          "path": "fuel-14-svgrepo-com6780378572886747.png",
+          "type": "Image"
+        },
+        {
+          "name": "highway-road-svgrepo-com23622825197429087.png",
+          "path": "highway-road-svgrepo-com23622825197429087.png",
+          "type": "Image"
+        },
+        {
+          "name": "leaves-svgrepo-com4011296343618225.png",
+          "path": "leaves-svgrepo-com4011296343618225.png",
+          "type": "Image"
+        },
+        {
+          "name": "leaves-svgrepo-com9474461132440828.png",
+          "path": "leaves-svgrepo-com9474461132440828.png",
+          "type": "Image"
+        },
+        {
+          "name": "mountain-cave-svgrepo-com6924003207539787.png",
+          "path": "mountain-cave-svgrepo-com6924003207539787.png",
+          "type": "Image"
+        },
+        {
+          "name": "Per_9086182400763134.png",
+          "path": "Per_9086182400763134.png",
+          "type": "Image"
+        },
+        {
+          "name": "peru_departamental_simple42937669745461504.geojson",
+          "path": "peru_departamental_simple42937669745461504.geojson",
+          "type": "ShapeMap"
+        },
+        {
+          "name": "road-2-svgrepo-com_(1)6668166079934315.png",
+          "path": "road-2-svgrepo-com_(1)6668166079934315.png",
+          "type": "Image"
+        },
+        {
+          "name": "road-2-svgrepo-com_(2)5378529371878102.png",
+          "path": "road-2-svgrepo-com_(2)5378529371878102.png",
+          "type": "Image"
+        },
+        {
+          "name": "road-2-svgrepo-com_(3)18918473016083848.png",
+          "path": "road-2-svgrepo-com_(3)18918473016083848.png",
+          "type": "Image"
+        },
+        {
+          "name": "road-2-svgrepo-com2915624680711134.png",
+          "path": "road-2-svgrepo-com2915624680711134.png",
+          "type": "Image"
+        },
+        {
+          "name": "team-3-svgrepo-com9687172251680856.png",
+          "path": "team-3-svgrepo-com9687172251680856.png",
+          "type": "Image"
+        },
+        {
+          "name": "time-clock-svgrepo-com6247525272575403.png",
+          "path": "time-clock-svgrepo-com6247525272575403.png",
+          "type": "Image"
+        },
+        {
+          "name": "time-clock-svgrepo-com9724786040489226.png",
+          "path": "time-clock-svgrepo-com9724786040489226.png",
+          "type": "Image"
+        },
+        {
+          "name": "truck-svgrepo-com_(1)004611368620772938.png",
+          "path": "truck-svgrepo-com_(1)004611368620772938.png",
+          "type": "Image"
+        },
+        {
+          "name": "truck-svgrepo-com_(1)3914498087959436.png",
+          "path": "truck-svgrepo-com_(1)3914498087959436.png",
+          "type": "Image"
+        },
+        {
+          "name": "truck-svgrepo-com_(2)2581599817230278.png",
+          "path": "truck-svgrepo-com_(2)2581599817230278.png",
+          "type": "Image"
+        },
+        {
+          "name": "truck-svgrepo-com22205034480952945.png",
+          "path": "truck-svgrepo-com22205034480952945.png",
+          "type": "Image"
+        },
+        {
+          "name": "truck-svgrepo-com9954709780038147.png",
+          "path": "truck-svgrepo-com9954709780038147.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultFilterActionIsDataFilter": true,
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": true,
+    "filterPaneHiddenInEditMode": true,
+    "useDefaultAggregateDisplayName": true,
+    "queryLimitOption": "None",
+    "customMemoryLimit": "1048576",
+    "customTimeoutLimit": "225"
+  }
+}

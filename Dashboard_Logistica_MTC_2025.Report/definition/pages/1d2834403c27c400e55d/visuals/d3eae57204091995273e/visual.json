@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "d3eae57204091995273e",
+  "position": {
+    "x": 37.241379310344826,
+    "y": 1026.7980295566501,
+    "z": 30000,
+    "height": 53.201970443349751,
+    "width": 986.89655172413791,
+    "tabOrder": 30000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Fuente: MTC y Plataforma Nacional de Datos Abiertos (parque vehicular, empresas autorizadas, red vial y carga nacional 2025). Elaboración propia."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

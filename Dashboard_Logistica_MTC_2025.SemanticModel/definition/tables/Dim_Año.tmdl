@@ -1,0 +1,18 @@
+table Dim_Año
+	lineageTag: 4e89ac29-ef1a-4681-940f-325715813149
+
+	column Año
+		formatString: 0
+		lineageTag: 8b0f7fc5-13bf-4775-9aff-dcd6518ced07
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Fact_RedVial[Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Año = calculated
+		mode: import
+		source = DISTINCT(Fact_RedVial[Año])
+
+	annotation PBI_Id = 552ab343adf2407caf1dfc40c352e780
+

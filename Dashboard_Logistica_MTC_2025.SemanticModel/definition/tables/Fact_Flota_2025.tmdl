@@ -1,0 +1,669 @@
+table Fact_Flota_2025
+	lineageTag: 461c4a70-41f5-4321-b2ca-bb0877727a3a
+
+	measure 'Registros de flota' = COUNTROWS(Fact_Flota_2025)
+		formatString: 0
+		lineageTag: 9fbd5f23-e165-4cc0-8319-120062ba2967
+
+	measure 'Vehículos únicos' = DISTINCTCOUNT(Fact_Flota_2025[PLACA])
+		formatString: #,0
+		lineageTag: 733fa799-00dc-474b-9b08-c432f2b6b764
+
+	measure 'Antigüedad promedio' = AVERAGEX(FILTER(Fact_Flota_2025, NOT(ISBLANK(Fact_Flota_2025[AÑO_FAB])) && Fact_Flota_2025[AÑO_FAB] >= 1900 && Fact_Flota_2025[AÑO_FAB] <= YEAR(Fact_Flota_2025[FECHA_CORTE])), YEAR(Fact_Flota_2025[FECHA_CORTE]) - Fact_Flota_2025[AÑO_FAB])
+		formatString: 0.0
+		lineageTag: 5ecdb8b1-7e34-4b41-9d08-77ef67dd26ae
+
+	measure 'Vehículos flota' =
+			
+			COUNTROWS(Fact_Flota_2025)
+		formatString: #,0
+		lineageTag: 92d4680e-2d5c-40de-b5b9-a2b16c4c5f53
+
+	measure '% Flota menor de 10 años' =
+			
+			VAR VehiculosConAnioValido =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        FILTER(
+			            Fact_Flota_2025,
+			            NOT ISBLANK(Fact_Flota_2025[AÑO_FAB]) &&
+			            Fact_Flota_2025[AÑO_FAB] >= 1900 &&
+			            Fact_Flota_2025[AÑO_FAB] <=
+			                YEAR(Fact_Flota_2025[FECHA_CORTE])
+			        )
+			    )
+			VAR VehiculosMenor10 =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        FILTER(
+			            Fact_Flota_2025,
+			            NOT ISBLANK(Fact_Flota_2025[AÑO_FAB]) &&
+			            Fact_Flota_2025[AÑO_FAB] >= 1900 &&
+			            Fact_Flota_2025[AÑO_FAB] <=
+			                YEAR(Fact_Flota_2025[FECHA_CORTE]) &&
+			            YEAR(Fact_Flota_2025[FECHA_CORTE]) -
+			                Fact_Flota_2025[AÑO_FAB] >= 0 &&
+			            YEAR(Fact_Flota_2025[FECHA_CORTE]) -
+			                Fact_Flota_2025[AÑO_FAB] <= 10
+			        )
+			    )
+			RETURN
+			    DIVIDE(VehiculosMenor10, VehiculosConAnioValido)
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 8482c584-1074-426b-ae84-5bbe14b8e6e6
+
+	measure '% Flota mayor de 15 años' =
+			
+			VAR VehiculosConAnioValido =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        FILTER(
+			            Fact_Flota_2025,
+			            NOT ISBLANK(Fact_Flota_2025[AÑO_FAB]) &&
+			            Fact_Flota_2025[AÑO_FAB] >= 1900 &&
+			            Fact_Flota_2025[AÑO_FAB] <=
+			                YEAR(Fact_Flota_2025[FECHA_CORTE])
+			        )
+			    )
+			VAR VehiculosMayor15 =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        FILTER(
+			            Fact_Flota_2025,
+			            NOT ISBLANK(Fact_Flota_2025[AÑO_FAB]) &&
+			            Fact_Flota_2025[AÑO_FAB] >= 1900 &&
+			            Fact_Flota_2025[AÑO_FAB] <=
+			                YEAR(Fact_Flota_2025[FECHA_CORTE]) &&
+			            YEAR(Fact_Flota_2025[FECHA_CORTE]) -
+			                Fact_Flota_2025[AÑO_FAB] > 15
+			        )
+			    )
+			RETURN
+			    DIVIDE(VehiculosMayor15, VehiculosConAnioValido)
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: defe84ff-7db3-4e83-868f-5f0283f43a48
+
+	measure '% Vehículos diésel' =
+			
+			VAR VehiculosDiesel =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        FILTER(
+			            Fact_Flota_2025,
+			            VAR TipoCombustible =
+			                UPPER(
+			                    TRIM(
+			                        COALESCE(
+			                            Fact_Flota_2025[Combustible],
+			                            ""
+			                        )
+			                    )
+			                )
+			            RETURN
+			                CONTAINSSTRING(TipoCombustible, "DIESEL") ||
+			                CONTAINSSTRING(TipoCombustible, "DIÉSEL")
+			        )
+			    )
+			RETURN
+			    DIVIDE(
+			        VehiculosDiesel,
+			        [Vehículos únicos]
+			    )
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 6f607bc3-b055-4acf-a160-e6905c102ffe
+
+	measure '% de vehículos por clase' =
+			
+			DIVIDE(
+			    [Vehículos únicos],
+			    CALCULATE(
+			        [Vehículos únicos],
+			        ALLSELECTED(Fact_Flota_2025[Clase de vehículo agrupada])
+			    )
+			)
+		lineageTag: e375b77e-458a-475e-8d28-e399dc2088c3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Cantidad y porcentaje de clase' =
+			
+			FORMAT([Vehículos únicos], "#,0", "en-US")
+			    & " ("
+			    & FORMAT([% de vehículos por clase], "0.0%", "en-US")
+			    & ")"
+		lineageTag: 134e898a-9019-4c13-be4b-869e45b99311
+
+	measure 'Detalle Camión' =
+			
+			VAR TotalVisible = [Vehículos únicos]
+			VAR Cantidad =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        KEEPFILTERS(
+			            Fact_Flota_2025[Clase de vehículo agrupada] = "Camión"
+			        )
+			    )
+			RETURN
+			    IF(
+			        NOT ISBLANK(Cantidad),
+			        FORMAT(Cantidad, "#,0", "en-US")
+			            & " ("
+			            & FORMAT(DIVIDE(Cantidad, TotalVisible), "0.0%", "en-US")
+			            & ")"
+			    )
+		lineageTag: 4800b06a-2053-4d4d-a053-3cfdecbcea46
+
+	measure 'Detalle Semirremolque' =
+			
+			VAR TotalVisible = [Vehículos únicos]
+			VAR Cantidad =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        KEEPFILTERS(
+			            Fact_Flota_2025[Clase de vehículo agrupada] = "Semirremolque"
+			        )
+			    )
+			RETURN
+			    IF(
+			        NOT ISBLANK(Cantidad),
+			        FORMAT(Cantidad, "#,0", "en-US")
+			            & " ("
+			            & FORMAT(DIVIDE(Cantidad, TotalVisible), "0.0%", "en-US")
+			            & ")"
+			    )
+		lineageTag: b6f3f540-860c-4768-b956-06aec1995900
+
+	measure 'Detalle Remolcador' =
+			
+			VAR TotalVisible = [Vehículos únicos]
+			VAR Cantidad =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        KEEPFILTERS(
+			            Fact_Flota_2025[Clase de vehículo agrupada] = "Remolcador"
+			        )
+			    )
+			RETURN
+			    IF(
+			        NOT ISBLANK(Cantidad),
+			        FORMAT(Cantidad, "#,0", "en-US")
+			            & " ("
+			            & FORMAT(DIVIDE(Cantidad, TotalVisible), "0.0%", "en-US")
+			            & ")"
+			    )
+		lineageTag: edb524c4-1dcf-4351-9f7d-daae7bf8c048
+
+	measure 'Detalle Cta Pickup' =
+			
+			VAR TotalVisible = [Vehículos únicos]
+			VAR Cantidad =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        KEEPFILTERS(
+			            Fact_Flota_2025[Clase de vehículo agrupada] = "Cta. Pickup"
+			        )
+			    )
+			RETURN
+			    IF(
+			        NOT ISBLANK(Cantidad),
+			        FORMAT(Cantidad, "#,0", "en-US")
+			            & " ("
+			            & FORMAT(DIVIDE(Cantidad, TotalVisible), "0.0%", "en-US")
+			            & ")"
+			    )
+		lineageTag: 3e770a69-de67-4ddb-8aab-327cba405a0b
+
+	measure 'Detalle Otros' =
+			
+			VAR TotalVisible = [Vehículos únicos]
+			VAR Cantidad =
+			    CALCULATE(
+			        [Vehículos únicos],
+			        KEEPFILTERS(
+			            Fact_Flota_2025[Clase de vehículo agrupada] = "Otros"
+			        )
+			    )
+			RETURN
+			    IF(
+			        NOT ISBLANK(Cantidad),
+			        FORMAT(Cantidad, "#,0", "en-US")
+			            & " ("
+			            & FORMAT(DIVIDE(Cantidad, TotalVisible), "0.0%", "en-US")
+			            & ")"
+			    )
+		lineageTag: 6e1372d6-94bc-4278-90e1-2903bc6e7213
+
+	measure '% combustible dentro de clase' =
+			
+			DIVIDE(
+			    [Vehículos únicos],
+			    CALCULATE(
+			        [Vehículos únicos],
+			        REMOVEFILTERS(Fact_Flota_2025[Combustible (grupos)])
+			    )
+			)
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: e270d43f-e02d-4b34-9c36-9cbe1eca0d6a
+
+	measure 'Años de fabricación válidos' =
+			
+			CALCULATE(
+			    [Vehículos únicos],
+			    FILTER(
+			        Fact_Flota_2025,
+			        NOT ISBLANK(Fact_Flota_2025[AÑO_FAB]) &&
+			        NOT ISBLANK(Fact_Flota_2025[FECHA_CORTE]) &&
+			        Fact_Flota_2025[AÑO_FAB] >= 1900 &&
+			        Fact_Flota_2025[AÑO_FAB] <= YEAR(Fact_Flota_2025[FECHA_CORTE])
+			    )
+			)
+		formatString: #,0
+		lineageTag: 766c0a1c-1702-4de8-a2a7-e362e5e8eeec
+
+	column ID
+		dataType: string
+		lineageTag: 17ff4438-6360-456f-9dab-4d92ab68599a
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column RUC
+		dataType: string
+		lineageTag: ebc6c3d0-4cf3-4657-bddf-5b7d5a99b662
+		summarizeBy: none
+		sourceColumn: RUC
+
+		annotation SummarizationSetBy = Automatic
+
+	column RAZON_SOCIAL
+		dataType: string
+		lineageTag: f197b9fc-51ca-4b72-9ec2-8dc0e0f1ccbb
+		summarizeBy: none
+		sourceColumn: RAZON_SOCIAL
+
+		annotation SummarizationSetBy = Automatic
+
+	column FECHA_RESOLUCION
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: bd60b97f-9a09-4842-a2cd-3b9514f7395b
+		summarizeBy: none
+		sourceColumn: FECHA_RESOLUCION
+
+		variation Variación
+			isDefault
+			relationship: 8881efa9-2429-46eb-8df9-97a2a68fd523
+			defaultHierarchy: LocalDateTable_361bd888-6de8-4249-87b4-240041b49164.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column VIGENCIA_HASTA
+		dataType: string
+		lineageTag: 96e0c607-e039-41d0-b6e9-6e6f22d91173
+		summarizeBy: none
+		sourceColumn: VIGENCIA_HASTA
+
+		annotation SummarizationSetBy = Automatic
+
+	column PERMISO_OPER
+		dataType: string
+		lineageTag: 2a20ab6a-3473-4480-8219-826d19aedbb2
+		summarizeBy: none
+		sourceColumn: PERMISO_OPER
+
+		annotation SummarizationSetBy = Automatic
+
+	column PLACA
+		dataType: string
+		lineageTag: 7db18280-4dfd-48d1-b3b6-e31c3ae60a60
+		summarizeBy: none
+		sourceColumn: PLACA
+
+		annotation SummarizationSetBy = Automatic
+
+	column AÑO_FAB
+		dataType: int64
+		formatString: 0
+		lineageTag: 15caf4fe-432c-4534-8e78-06a918ce5292
+		summarizeBy: none
+		sourceColumn: AÑO_FAB
+
+		annotation SummarizationSetBy = User
+
+	column N_CHASIS
+		dataType: string
+		lineageTag: 08be5b7c-274e-4972-9538-fcf8c79b5908
+		summarizeBy: none
+		sourceColumn: N_CHASIS
+
+		annotation SummarizationSetBy = Automatic
+
+	column N_MOTOR
+		dataType: string
+		lineageTag: 9562d068-f6ba-40ba-b33e-6b055c110e1b
+		summarizeBy: none
+		sourceColumn: N_MOTOR
+
+		annotation SummarizationSetBy = Automatic
+
+	column MARCA
+		dataType: string
+		lineageTag: d70ee0c6-3b12-4c02-822a-9fff4dda04db
+		summarizeBy: none
+		sourceColumn: MARCA
+
+		annotation SummarizationSetBy = Automatic
+
+	column SERVICIO
+		dataType: string
+		lineageTag: 4cbfbb05-2a7b-4a22-87c2-02c88263efa9
+		summarizeBy: none
+		sourceColumn: SERVICIO
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Clase de vehículo'
+		dataType: string
+		lineageTag: 03d15819-fe96-4d97-b5f3-092255fc3053
+		summarizeBy: none
+		sourceColumn: Clase de vehículo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Combustible
+		dataType: string
+		lineageTag: 876082d7-a627-4091-896e-60762122a78d
+		summarizeBy: none
+		sourceColumn: Combustible
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"Fact_Flota_2025","TableItemName":"Combustible (grupos)","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column N_ASIENTOS
+		dataType: string
+		lineageTag: c1a22ead-a4a3-4bac-954d-b74ec01728f1
+		summarizeBy: none
+		sourceColumn: N_ASIENTOS
+
+		annotation SummarizationSetBy = Automatic
+
+	column N_LLANTAS
+		dataType: string
+		lineageTag: e54978af-b373-4ec9-adac-4b6cd83b384e
+		summarizeBy: none
+		sourceColumn: N_LLANTAS
+
+		annotation SummarizationSetBy = Automatic
+
+	column N_EJES
+		dataType: int64
+		formatString: 0
+		lineageTag: 9865f021-9d54-4202-bb62-6decdcf23176
+		summarizeBy: sum
+		sourceColumn: N_EJES
+
+		annotation SummarizationSetBy = Automatic
+
+	column CARGA_UTIL
+		dataType: double
+		lineageTag: 5e15018f-58dc-4512-8a82-9bbee4a825cd
+		summarizeBy: sum
+		sourceColumn: CARGA_UTIL
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column P_SECO
+		dataType: double
+		lineageTag: 88925bf2-f530-4974-8681-9abfb8ffca14
+		summarizeBy: sum
+		sourceColumn: P_SECO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column P_BRUTO
+		dataType: double
+		lineageTag: 8b3d0ca9-1361-42d4-bd1e-a80bd48a2320
+		summarizeBy: sum
+		sourceColumn: P_BRUTO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LARGO
+		dataType: double
+		lineageTag: 75f7a900-5111-4dc7-964b-24282d9c9cc5
+		summarizeBy: sum
+		sourceColumn: LARGO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ANCHO
+		dataType: double
+		lineageTag: 1db6c79c-3731-4c90-aaa7-e8121b40b201
+		summarizeBy: sum
+		sourceColumn: ANCHO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ALTO
+		dataType: double
+		lineageTag: 8122fa54-2a85-4326-a38c-e78b933b31b3
+		summarizeBy: sum
+		sourceColumn: ALTO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DEPARTAMENTO
+		dataType: string
+		lineageTag: 7614c78d-3469-403a-baf7-d5202576473a
+		summarizeBy: none
+		sourceColumn: DEPARTAMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column FECHA_CORTE
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 6a84f9db-063f-4292-b882-331c00816aba
+		summarizeBy: none
+		sourceColumn: FECHA_CORTE
+
+		variation Variación
+			isDefault
+			relationship: 052f4af3-8847-4a7e-a8b1-41d218a53985
+			defaultHierarchy: LocalDateTable_187259a4-1bcd-48fe-a193-8fde6cf29b01.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Año
+		dataType: int64
+		formatString: 0
+		lineageTag: 18072bcc-adf6-46f0-bf06-dff7b8c29352
+		summarizeBy: none
+		sourceColumn: Año
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Clase de vehículo agrupada' =
+			
+			VAR Clase =
+			    UPPER(
+			        TRIM(Fact_Flota_2025[Clase de vehículo])
+			    )
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        Clase = "CAMION", "Camión",
+			        Clase = "SEMIREMOLQUE", "Semirremolque",
+			        Clase = "REMOLCADOR", "Remolcador",
+			        Clase = "CMTA PICKUP", "Cta. Pickup",
+			        "Otros"
+			    )
+		lineageTag: 9eb18653-c5ad-4415-96c4-5fbf09efd005
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Grupo antigüedad' =
+			
+			VAR AnioFab = Fact_Flota_2025[AÑO_FAB]
+			VAR FechaCorte = Fact_Flota_2025[FECHA_CORTE]
+			VAR Edad = YEAR(FechaCorte) - AnioFab
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        ISBLANK(AnioFab) || ISBLANK(FechaCorte) || AnioFab < 1900 || Edad < 0, "Año no válido",
+			        Edad <= 5, "0–5 años",
+			        Edad <= 10, "6–10 años",
+			        Edad <= 15, "11–15 años",
+			        Edad <= 20, "16–20 años",
+			        "Más de 20 años"
+			    )
+		lineageTag: 9bf879fb-d085-448b-93a8-e36434bb59d2
+		summarizeBy: none
+		sortByColumn: 'Orden antigüedad'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Orden antigüedad' =
+			
+			VAR AnioFab = Fact_Flota_2025[AÑO_FAB]
+			VAR FechaCorte = Fact_Flota_2025[FECHA_CORTE]
+			VAR Edad = YEAR(FechaCorte) - AnioFab
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        ISBLANK(AnioFab) || ISBLANK(FechaCorte) || AnioFab < 1900 || Edad < 0, 6,
+			        Edad <= 5, 1,
+			        Edad <= 10, 2,
+			        Edad <= 15, 3,
+			        Edad <= 20, 4,
+			        5
+			    )
+		formatString: #,0
+		lineageTag: 2489b2f6-736a-49db-bd69-6139228e146b
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Combustible (grupos)' =
+			SWITCH(
+				TRUE,
+				ISBLANK('Fact_Flota_2025'[Combustible]),
+				"(En blanco)",
+				'Fact_Flota_2025'[Combustible] IN {"BIODIESEL",
+					"DIÉSEL",
+					"HIBRIDO (DIESEL / BATERIAS)"},
+				"DIÉSEL",
+				'Fact_Flota_2025'[Combustible] IN {"CELDAS DE COMBUSTIBLE",
+					"ELÉCTRICO"},
+				"ELÉCTRICO",
+				'Fact_Flota_2025'[Combustible] IN {"FLEXFUEL",
+					"GASOLINA",
+					"HÍBRIDO (GASOLINA / BATERIAS)"},
+				"GASOLINA",
+				'Fact_Flota_2025'[Combustible] IN {"BI - COMBUSTIBLE GLP",
+					"GLP"},
+				"GLP",
+				'Fact_Flota_2025'[Combustible] IN {"BI - COMBUSTIBLE GNL",
+					"BI - COMBUSTIBLE GNV",
+					"GNL",
+					"GNV"},
+				"GNV",
+				'Fact_Flota_2025'[Combustible] IN {"S/C"},
+				"S/C",
+				'Fact_Flota_2025'[Combustible]
+			)
+		lineageTag: dde48a10-76dc-46cb-b9bb-7b24ccf1cc79
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "Fact_Flota_2025"
+				          }
+				        },
+				        "Property": "Combustible"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"f","Entity":"Fact_Flota_2025"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"Combustible"}}],"GroupItems":[{"DisplayName":"(En blanco)","BlankDefaultPlaceholder":true},{"DisplayName":"DIÉSEL","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"Combustible"}}],"Values":[[{"Literal":{"Value":"'BIODIESEL'"}}],[{"Literal":{"Value":"'DIÉSEL'"}}],[{"Literal":{"Value":"'HIBRIDO (DIESEL / BATERIAS)'"}}]]}}},{"DisplayName":"ELÉCTRICO","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"Combustible"}}],"Values":[[{"Literal":{"Value":"'CELDAS DE COMBUSTIBLE'"}}],[{"Literal":{"Value":"'ELÉCTRICO'"}}]]}}},{"DisplayName":"GASOLINA","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"Combustible"}}],"Values":[[{"Literal":{"Value":"'FLEXFUEL'"}}],[{"Literal":{"Value":"'GASOLINA'"}}],[{"Literal":{"Value":"'HÍBRIDO (GASOLINA / BATERIAS)'"}}]]}}},{"DisplayName":"GLP","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"Combustible"}}],"Values":[[{"Literal":{"Value":"'BI - COMBUSTIBLE GLP'"}}],[{"Literal":{"Value":"'GLP'"}}]]}}},{"DisplayName":"GNV","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"Combustible"}}],"Values":[[{"Literal":{"Value":"'BI - COMBUSTIBLE GNL'"}}],[{"Literal":{"Value":"'BI - COMBUSTIBLE GNV'"}}],[{"Literal":{"Value":"'GNL'"}}],[{"Literal":{"Value":"'GNV'"}}]]}}},{"DisplayName":"S/C","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"f"}},"Property":"Combustible"}}],"Values":[[{"Literal":{"Value":"'S/C'"}}]]}}}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact_Flota_2025 = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(Web.Contents(pURL_Flota),[Delimiter=";", Columns=25, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Cambiar tipo" = Table.TransformColumnTypes(Origen,{{"Column1", type text}, {"Column2", type text}, {"Column3", type text}, {"Column4", type text}, {"Column5", type text}, {"Column6", type text}, {"Column7", type text}, {"Column8", type text}, {"Column9", type text}, {"Column10", type text}, {"Column11", type text}, {"Column12", type text}, {"Column13", type text}, {"Column14", type text}, {"Column15", type text}, {"Column16", type text}, {"Column17", type text}, {"Column18", type text}, {"Column19", type text}, {"Column20", type text}, {"Column21", type text}, {"Column22", type text}, {"Column23", type text}, {"Column24", type text}, {"Column25", type text}}),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(#"Cambiar tipo", [PromoteAllScalars=true]),
+				    #"Tipo cambiado con configuración regional" = Table.TransformColumnTypes(#"Encabezados promovidos", {{"CARGA_UTIL", type number}, {"P_SECO", type number}, {"P_BRUTO", type number}, {"LARGO", type number}, {"ANCHO", type number}, {"ALTO", type number}}, "es-ES"),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Tipo cambiado con configuración regional",{{"N_EJES", Int64.Type}, {"ANIO_FAB", Int64.Type}}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Tipo cambiado",{{"ANIO_FAB", "AÑO_FAB"}}),
+				    #"Personalizada agregada" = Table.AddColumn(#"Columnas con nombre cambiado", "FechaCorte", each #date(
+				    Number.FromText(Text.Start(Text.From([FECHA_CORTE]), 4)),
+				    Number.FromText(Text.Middle(Text.From([FECHA_CORTE]), 4, 2)),
+				    Number.FromText(Text.End(Text.From([FECHA_CORTE]), 2))
+				)),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Personalizada agregada",{{"FechaCorte", type date}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado1",{"FECHA_CORTE"}),
+				    #"Columnas con nombre cambiado1" = Table.RenameColumns(#"Columnas quitadas",{{"FechaCorte", "FECHA_CORTE"}}),
+				    #"Tipo cambiado con configuración regional1" = Table.TransformColumnTypes(#"Columnas con nombre cambiado1", {{"FECHA_RESOLUCION", type date}}, "es-ES"),
+				    #"Personalizada agregada1" = Table.AddColumn(#"Tipo cambiado con configuración regional1", "Año", each Date.Year([FECHA_CORTE])),
+				    #"Poner En Mayúsculas Cada Palabra" = Table.TransformColumns(#"Personalizada agregada1",{{"DEPARTAMENTO", Text.Proper, type text}}),
+				    #"Personalizada agregada2" = Table.AddColumn(#"Poner En Mayúsculas Cada Palabra", "DEPARTAMENTO1", each if [DEPARTAMENTO] = "Ancash" then "Áncash"
+				else if [DEPARTAMENTO] = "Apurimac" then "Apurímac"
+				else if [DEPARTAMENTO] = "Huanuco" then "Huánuco"
+				else if [DEPARTAMENTO] = "Junin" then "Junín"
+				else if [DEPARTAMENTO] = "San Martin" then "San Martín"
+				else if [DEPARTAMENTO] = "Madre De Dios" then "Madre de Dios"
+				else [DEPARTAMENTO]),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Personalizada agregada2",{"ID", "RUC", "RAZON_SOCIAL", "FECHA_RESOLUCION", "VIGENCIA_HASTA", "PERMISO_OPER", "PLACA", "AÑO_FAB", "N_CHASIS", "N_MOTOR", "MARCA", "SERVICIO", "CLASE", "COMBUSTIBLE", "N_ASIENTOS", "N_LLANTAS", "N_EJES", "CARGA_UTIL", "P_SECO", "P_BRUTO", "LARGO", "ANCHO", "ALTO", "DEPARTAMENTO", "DEPARTAMENTO1", "FECHA_CORTE", "Año"}),
+				    #"Columnas quitadas1" = Table.RemoveColumns(#"Columnas reordenadas",{"DEPARTAMENTO"}),
+				    #"Columnas con nombre cambiado2" = Table.RenameColumns(#"Columnas quitadas1",{{"DEPARTAMENTO1", "DEPARTAMENTO"}}),
+				    #"Tipo cambiado2" = Table.TransformColumnTypes(#"Columnas con nombre cambiado2",{{"DEPARTAMENTO", type text}, {"Año", Int64.Type}}),
+				    #"Filas ordenadas" = Table.Sort(#"Tipo cambiado2", {{"FECHA_RESOLUCION", Order.Descending}}),
+				    Personalizado1 = Table.Buffer(#"Filas ordenadas"),
+				    #"Duplicados quitados" = Table.Distinct(Personalizado1, {"PLACA"}),
+				    Personalizado2 = Table.ReplaceErrorValues(
+				    #"Duplicados quitados",
+				    {
+				        {"CARGA_UTIL", null},
+				        {"P_BRUTO", null}
+				    }
+				),
+				    #"Columnas con nombre cambiado3" = Table.RenameColumns(Personalizado2,{{"CLASE", "Clase de vehículo"}, {"COMBUSTIBLE", "Combustible"}})
+				in
+				    #"Columnas con nombre cambiado3"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,36 @@
+table TipoRed
+	lineageTag: 229475c9-4c22-4b0e-99b4-93dd1d3f1c0c
+
+	column Red
+		lineageTag: ade7eeb5-97b3-4883-a1a6-1503b1bdef5f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Red]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Orden
+		formatString: 0
+		lineageTag: 1ca1bc0d-b79f-41bf-8091-12cd95b7e878
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Orden]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TipoRed = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Red", STRING,
+				    "Orden", INTEGER,
+				    {
+				        {"Red Nacional", 1},
+				        {"Departamental", 2},
+				        {"Red Vecinal", 3}
+				    }
+				)
+
+	annotation PBI_Id = 69c062fa0db843c284d5daf42e2b12af
+

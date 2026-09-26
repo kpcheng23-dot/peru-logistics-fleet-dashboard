@@ -1,0 +1,49 @@
+table 'Indicador Mapa'
+	lineageTag: f16c8211-e376-4e50-ae15-3af711909a3c
+
+	column 'Indicador Mapa'
+		lineageTag: 79c01d43-c465-468f-8eb6-10f059c80e26
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Indicador Mapa Orden'
+
+		relatedColumnDetails
+			groupByColumn: 'Indicador Mapa Campos'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Indicador Mapa Campos'
+		isHidden
+		lineageTag: 0891eb16-a7ae-410a-a046-d7166577af75
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Indicador Mapa Orden'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Indicador Mapa Orden'
+		isHidden
+		formatString: 0
+		lineageTag: ac26bec9-d4a2-4169-bf1e-dc51d7d1f594
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Indicador Mapa' = calculated
+		mode: import
+		source =
+				{
+				    ("Vehículos", NAMEOF('Fact_ParqueVehicular'[Vehículos autorizados]), 0),
+				    ("Empresas", NAMEOF('Fact_Empresas'[Total empresas autorizadas]), 1),
+				    ("Red vial", NAMEOF('Fact_RedVial'[Longitud vial (km)]), 2)
+				}
+
+	annotation PBI_Id = 2d32ceb8433646adbac4cd70e0f9dcf5
+

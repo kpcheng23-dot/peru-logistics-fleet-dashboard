@@ -1,0 +1,35 @@
+model Model
+	culture: es-PE
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-PE
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+/// Errores en las consultas cargadas en 16/09/2026 23:08:23.
+queryGroup 'Errores en las consultas: 16/09/2026 23:08:23'
+
+	annotation PBI_QueryGroupOrder = 0
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Fact_Empresas","pURL_Empresas","Fact_ParqueVehicular","pURL_ParqueVehicular","pURL_RedVial","Fact_RedVial","Fact_Flota_2025","pURL_Flota"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Fact_Empresas
+ref table Fact_ParqueVehicular
+ref table Fact_RedVial
+ref table Dim_Departamento
+ref table Dim_Año
+ref table Fact_Flota_2025
+ref table DateTableTemplate_3d15424d-45f8-45b4-99c8-c6c6148a90a7
+ref table LocalDateTable_361bd888-6de8-4249-87b4-240041b49164
+ref table LocalDateTable_187259a4-1bcd-48fe-a193-8fde6cf29b01
+ref table Ranking_Departamento
+ref table 'Indicador Mapa'
+ref table TipoRed
+
+ref cultureInfo es-PE
+

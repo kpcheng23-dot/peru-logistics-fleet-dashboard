@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "df7384557e24d7309294",
+  "position": {
+    "x": 90.443349753694577,
+    "y": 1036.1083743842364,
+    "z": 19000,
+    "height": 43.891625615763544,
+    "width": 661.0344827586207,
+    "tabOrder": 19000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Fuente: MTC, Red Vial Existente del Sistema Nacional de Carreteras, 2010–2025. Elaboración propia."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

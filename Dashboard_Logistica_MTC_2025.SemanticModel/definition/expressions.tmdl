@@ -1,0 +1,28 @@
+expression pURL_Empresas = "https://cdn.www.gob.pe/uploads/document/file/404254/344890-empresas-autorizadas-del-transporte-de-carga-general-nacional-segun-departamento-2016-2025.xlsx?v=1785881265" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 73479494-7223-45aa-901e-ceb5df6a8824
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression pURL_ParqueVehicular = "https://cdn.www.gob.pe/uploads/document/file/404275/344892-parque-vehicular-autorizado-del-transporte-de-carga-general-nacional-segun-departamento-2016-2025.xlsx?v=1785882832" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: c8ce8784-a0c0-4b4c-9737-cf1ab2f40f7b
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression pURL_RedVial = "https://cdn.www.gob.pe/uploads/document/file/404048/344790-red-vial-existente-del-sistema-nacional-de-carreteras-segun-departamento-2010-2025.xlsx?v=1787153341" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 64353537-aa97-47a4-ae4e-a9b867b20a13
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression pURL_Flota = "https://www.datosabiertos.gob.pe/sites/default/files/Carga%20Nacional_25.csv" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: c6d40ad3-51a6-4f23-86b6-fbc50831c331
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+

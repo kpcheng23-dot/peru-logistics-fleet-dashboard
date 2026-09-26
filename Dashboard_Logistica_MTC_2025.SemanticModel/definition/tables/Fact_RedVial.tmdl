@@ -1,0 +1,638 @@
+table Fact_RedVial
+	lineageTag: 4f33b8fc-4ddd-40db-baac-c6757641770c
+
+	measure 'Longitud vial (km)' = VAR AnioEvaluado = MAX('Dim_Año'[Año]) RETURN CALCULATE(SUM(Fact_RedVial[LongitudTotalKm]), KEEPFILTERS('Dim_Año'[Año] = AnioEvaluado))
+		formatString: #,0.0
+		lineageTag: 31a8748a-4f31-4211-a952-19ce4d735b49
+		dataCategory: Uncategorized
+
+	measure 'Km red nacional' =
+			
+			VAR AnioEvaluado = MAX('Dim_Año'[Año])
+			RETURN
+			    CALCULATE(
+			        SUM(Fact_RedVial[NacionalTotalKm]),
+			        KEEPFILTERS('Dim_Año'[Año] = AnioEvaluado)
+			    )
+		formatString: #,0.0
+		lineageTag: 3469bda0-8db6-4ec9-9e9b-e6310672f42a
+
+	measure 'Km red departamental' =
+			
+			VAR AnioEvaluado = MAX('Dim_Año'[Año])
+			RETURN
+			    CALCULATE(
+			        SUM(Fact_RedVial[DepartamentalTotalKm]),
+			        KEEPFILTERS('Dim_Año'[Año] = AnioEvaluado)
+			    )
+		formatString: #,0.0
+		lineageTag: af8e2543-ad66-41d1-a67a-84210e3eda3f
+
+	measure 'Km red vecinal' =
+			
+			VAR AnioEvaluado = MAX('Dim_Año'[Año])
+			RETURN
+			    CALCULATE(
+			        SUM(Fact_RedVial[VecinalTotalKm]),
+			        KEEPFILTERS('Dim_Año'[Año] = AnioEvaluado)
+			    )
+		formatString: #,0.0
+		lineageTag: 8a9280ab-5978-438e-9048-e6c1db83a537
+
+	measure 'Longitud total mostrada' =
+			
+			VAR ValorKm = [Longitud vial (km)]
+			RETURN
+			    IF(
+			        ISBLANK(ValorKm),
+			        BLANK(),
+			        FORMAT(ValorKm, "#,##0.0", "es-PE") & " km"
+			    )
+		lineageTag: 2f551698-e9bf-421b-a8fd-4ebdfb651544
+
+	measure 'Red nacional mostrada' =
+			
+			VAR ValorKm = [Km red nacional]
+			VAR Participacion = DIVIDE(ValorKm, [Longitud vial (km)])
+			RETURN
+			    IF(
+			        ISBLANK(ValorKm),
+			        BLANK(),
+			        "km · " & FORMAT(Participacion, "0.0%", "es-PE")
+			    )
+		lineageTag: 70f4f299-a33e-4e2d-95ff-b7338a7e2bf9
+
+	measure 'Red departamental mostrada' =
+			
+			VAR ValorKm = [Km red departamental]
+			VAR Participacion = DIVIDE(ValorKm, [Longitud vial (km)])
+			RETURN IF(ISBLANK(ValorKm),
+			        BLANK(),
+			        "km · " & FORMAT(Participacion, "0.0%", "es-PE")
+			    )
+		lineageTag: 381c0d40-319a-4288-a06a-50c1efe66624
+
+	measure 'Red vecinal mostrada' =
+			
+			VAR ValorKm = [Km red vecinal]
+			VAR Participacion = DIVIDE(ValorKm, [Longitud vial (km)])
+			RETURN
+			    IF(
+			        ISBLANK(ValorKm),
+			        BLANK(),
+			        "km · " & FORMAT(Participacion, "0.0%", "es-PE")
+			    )
+		lineageTag: 5c2b0692-890c-46d7-9b93-24aa26171394
+
+	measure 'Km pavimentados' =
+			
+			VAR AnioEvaluado = MAX('Dim_Año'[Año])
+			RETURN
+			    CALCULATE(
+			        SUM(Fact_RedVial[NacionalPavimentadaKm])
+			        + SUM(Fact_RedVial[DepartamentalPavimentadaKm])
+			        + SUM(Fact_RedVial[VecinalPavimentadaKm]),
+			        KEEPFILTERS('Dim_Año'[Año] = AnioEvaluado)
+			    )
+		lineageTag: 0305dfa6-0761-4837-9ad2-3b639b8d2fdc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Porcentaje pavimentado' =
+			
+			DIVIDE([Km pavimentados], [Longitud vial (km)])
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: 567d318e-3bd0-450d-bc6a-bdad568bd848
+
+	measure 'Fondo hasta 35 %' =
+			
+			VAR P = [Porcentaje pavimentado]
+			RETURN IF(ISBLANK(P), BLANK(), MAX(0, 0.35 - P))
+		lineageTag: b68c62d4-e24e-4755-96f9-bd2b12f5e7d5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Km pavimentada por red' =
+			
+			VAR Anio = MAX('Dim_Año'[Año])
+			RETURN
+			CALCULATE(
+			    SWITCH(
+			        SELECTEDVALUE(TipoRed[Red]),
+			        "Red Nacional", SUM(Fact_RedVial[NacionalPavimentadaKm]),
+			        "Departamental", SUM(Fact_RedVial[DepartamentalPavimentadaKm]),
+			        "Red Vecinal", SUM(Fact_RedVial[VecinalPavimentadaKm])
+			    ),
+			    KEEPFILTERS('Dim_Año'[Año] = Anio)
+			)
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: cd6352b2-d533-4a1d-b736-109c5da24fb3
+
+	measure 'Km no pavimentada por red' =
+			
+			VAR Anio = MAX('Dim_Año'[Año])
+			RETURN
+			CALCULATE(
+			    SWITCH(
+			        SELECTEDVALUE(TipoRed[Red]),
+			        "Red Nacional", SUM(Fact_RedVial[NacionalNoPavimentadaKm]),
+			        "Departamental", SUM(Fact_RedVial[DepartamentalNoPavimentadaKm]),
+			        "Red Vecinal", SUM(Fact_RedVial[VecinalNoPavimentadaKm])
+			    ),
+			    KEEPFILTERS('Dim_Año'[Año] = Anio)
+			)
+		formatString: 0\ %;-0\ %;0\ %
+		lineageTag: 46f5ef0f-8fd6-487b-b4fa-8b8553119a15
+
+	measure '% pavimentada por red' =
+			
+			DIVIDE(
+			    [Km pavimentada por red],
+			    [Km pavimentada por red] + [Km no pavimentada por red]
+			)
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: ef924647-3cfc-4cd9-9028-57416b12092a
+
+	column DEPARTAMENTO
+		dataType: string
+		lineageTag: 838dcc2d-7d26-4d10-8058-7f2518f1dc4a
+		summarizeBy: none
+		sourceColumn: DEPARTAMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año
+		dataType: int64
+		formatString: 0
+		lineageTag: 19f84b92-d3c0-45e0-a150-6587c1065046
+		summarizeBy: none
+		sourceColumn: Año
+
+		annotation SummarizationSetBy = Automatic
+
+	column LongitudTotalKm
+		dataType: double
+		lineageTag: 0ca935a3-0638-4de7-85c7-b83051167ef8
+		summarizeBy: sum
+		sourceColumn: LongitudTotalKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NacionalTotalKm
+		dataType: double
+		lineageTag: 226207de-03db-4ad4-96d7-53c5cd2e7ab3
+		summarizeBy: sum
+		sourceColumn: NacionalTotalKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NacionalPavimentadaKm
+		dataType: double
+		lineageTag: 0a2edc3a-cdf0-4562-868f-9976be40cea5
+		summarizeBy: sum
+		sourceColumn: NacionalPavimentadaKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NacionalNoPavimentadaKm
+		dataType: double
+		lineageTag: 041159e7-2ce0-4edd-a0e1-64a32b2c1755
+		summarizeBy: sum
+		sourceColumn: NacionalNoPavimentadaKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DepartamentalTotalKm
+		dataType: double
+		lineageTag: 26eb4d9b-4afb-4d4d-b345-674503ac3e76
+		summarizeBy: sum
+		sourceColumn: DepartamentalTotalKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DepartamentalPavimentadaKm
+		dataType: double
+		lineageTag: 53b6f914-9dcc-454e-8e10-d3931a6397ac
+		summarizeBy: sum
+		sourceColumn: DepartamentalPavimentadaKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DepartamentalNoPavimentadaKm
+		dataType: double
+		lineageTag: 5d63c2d4-4b6f-45fb-8371-55e5e1a5d249
+		summarizeBy: sum
+		sourceColumn: DepartamentalNoPavimentadaKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column VecinalTotalKm
+		dataType: double
+		lineageTag: 7bbd4c2c-b160-4323-901e-79dd4880c77f
+		summarizeBy: sum
+		sourceColumn: VecinalTotalKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column VecinalPavimentadaKm
+		dataType: double
+		lineageTag: df4cc27e-804a-4570-a6e9-ae401cfa3189
+		summarizeBy: sum
+		sourceColumn: VecinalPavimentadaKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column VecinalNoPavimentadaKm
+		dataType: double
+		lineageTag: 5de4e7f3-f985-4feb-8474-924958b5c61f
+		summarizeBy: sum
+		sourceColumn: VecinalNoPavimentadaKm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Fact_RedVial = m
+		mode: import
+		source = ```
+				let
+				    Normalizar = (valor as any) as text =>
+				        let
+				            texto = 
+				            if valor = null then
+				            ""
+				            else
+				            try Text.From(valor) otherwise "",
+				            limpio = Text.Trim(Text.Clean(texto))
+				        in
+				            Text.Upper(limpio),
+				
+				    VariantesDepartamento = {
+				        "AMAZONAS",
+				        "ANCASH", "ÁNCASH",
+				        "APURIMAC", "APURÍMAC",
+				        "AREQUIPA",
+				        "AYACUCHO",
+				        "CAJAMARCA",
+				        "CALLAO",
+				        "CUSCO", "CUZCO",
+				        "HUANCAVELICA",
+				        "HUANUCO", "HUÁNUCO",
+				        "ICA",
+				        "JUNIN", "JUNÍN",
+				        "LA LIBERTAD",
+				        "LAMBAYEQUE",
+				        "LIMA",
+				        "LORETO",
+				        "MADRE DE DIOS",
+				        "MOQUEGUA",
+				        "PASCO",
+				        "PIURA",
+				        "PUNO",
+				        "SAN MARTIN", "SAN MARTÍN",
+				        "TACNA",
+				        "TUMBES",
+				        "UCAYALI"
+				    },
+				
+				    DepartamentosCanonicos = {
+				        "Amazonas",
+				        "Áncash", "Áncash",
+				        "Apurímac", "Apurímac",
+				        "Arequipa",
+				        "Ayacucho",
+				        "Cajamarca",
+				        "Callao",
+				        "Cusco", "Cusco",
+				        "Huancavelica",
+				        "Huánuco", "Huánuco",
+				        "Ica",
+				        "Junín", "Junín",
+				        "La Libertad",
+				        "Lambayeque",
+				        "Lima",
+				        "Loreto",
+				        "Madre de Dios",
+				        "Moquegua",
+				        "Pasco",
+				        "Piura",
+				        "Puno",
+				        "San Martín", "San Martín",
+				        "Tacna",
+				        "Tumbes",
+				        "Ucayali"
+				    },
+				
+				    MapaDepartamentos =
+				        Record.FromList(
+				            DepartamentosCanonicos,
+				            VariantesDepartamento
+				        ),
+				
+				    DepartamentoCanonico = (valor as any) as nullable text =>
+				        Record.FieldOrDefault(
+				            MapaDepartamentos,
+				            Normalizar(valor),
+				            null
+				        ),
+				
+				    BuscarEncabezado = (lista as list, inicio as text) as number =>
+				        List.PositionOf(
+				            List.Transform(lista, each Text.StartsWith(_, inicio)),
+				            true
+				        ),
+				
+				    ObtenerValor = (lista as list, posicion as number) as any =>
+				        try lista{posicion} otherwise null,
+				
+				    ConvertirNumero = (valor as any) as nullable number =>
+				        try Number.From(valor) otherwise null,
+				
+				    TransformarHoja = (tabla as table, anio as number) as table =>
+				        let
+				            Columnas = Table.ColumnNames(tabla),
+				
+				            ConIndice =
+				                Table.AddIndexColumn(
+				                    tabla,
+				                    "__Fila",
+				                    0,
+				                    1,
+				                    Int64.Type
+				                ),
+				
+				            Candidatos =
+				                List.Combine(
+				                    List.Transform(
+				                        Table.ToRecords(ConIndice),
+				                        (fila as record) =>
+				                            let
+				                                ValoresFila =
+				                                    List.Transform(
+				                                        Columnas,
+				                                        (columna as text) =>
+				                                            Normalizar(
+				                                                Record.Field(fila, columna)
+				                                            )
+				                                    ),
+				
+				                                PosicionesDepartamento =
+				                                    List.PositionOf(
+				                                        ValoresFila,
+				                                        "DEPARTAMENTO",
+				                                        Occurrence.All
+				                                    ),
+				
+				                                Evaluados =
+				                                    List.Transform(
+				                                        PosicionesDepartamento,
+				                                        (posicion as number) =>
+				                                            let
+				                                                Siguientes =
+				                                                    List.Select(
+				                                                        PosicionesDepartamento,
+				                                                        each _ > posicion
+				                                                    ),
+				
+				                                                Limite =
+				                                                    if List.Count(Siguientes) > 0
+				                                                    then List.Min(Siguientes)
+				                                                    else List.Count(ValoresFila),
+				
+				                                                Segmento =
+				                                                    List.Range(
+				                                                        ValoresFila,
+				                                                        posicion,
+				                                                        Limite - posicion
+				                                                    ),
+				
+				                                                EsValido =
+				                                                    BuscarEncabezado(Segmento, "LONGITUD") >= 0
+				                                                        and BuscarEncabezado(Segmento, "NACIONAL") >= 0
+				                                                        and BuscarEncabezado(Segmento, "DEPARTAMENTAL") >= 0
+				                                                        and BuscarEncabezado(Segmento, "VECINAL") >= 0
+				                                            in
+				                                                if EsValido then
+				                                                    [
+				                                                        Fila = Record.Field(fila, "__Fila"),
+				                                                        PosDepartamento = posicion,
+				                                                        Segmento = Segmento
+				                                                    ]
+				                                                else
+				                                                    null
+				                                    )
+				                            in
+				                                List.RemoveNulls(Evaluados)
+				                    )
+				                ),
+				
+				            UltimaFila =
+				                List.Max(
+				                    List.Transform(Candidatos, each [Fila])
+				                ),
+				
+				            CandidatosUltimaFila =
+				                List.Select(
+				                    Candidatos,
+				                    each [Fila] = UltimaFila
+				                ),
+				
+				            EncabezadoElegido =
+				                List.Last(CandidatosUltimaFila),
+				
+				            PosDepartamento =
+				                EncabezadoElegido[PosDepartamento],
+				
+				            SegmentoElegido =
+				                EncabezadoElegido[Segmento],
+				
+				            PosLongitud =
+				                PosDepartamento
+				                    + BuscarEncabezado(SegmentoElegido, "LONGITUD"),
+				
+				            PosNacional =
+				                PosDepartamento
+				                    + BuscarEncabezado(SegmentoElegido, "NACIONAL"),
+				
+				            PosDepartamental =
+				                PosDepartamento
+				                    + BuscarEncabezado(SegmentoElegido, "DEPARTAMENTAL"),
+				
+				            PosVecinal =
+				                PosDepartamento
+				                    + BuscarEncabezado(SegmentoElegido, "VECINAL"),
+				
+				            FilasDeDatos =
+				                Table.Skip(
+				                    tabla,
+				                    EncabezadoElegido[Fila] + 3
+				                ),
+				
+				            Registros =
+				                List.Transform(
+				                    Table.ToRecords(FilasDeDatos),
+				                    (fila as record) =>
+				                        let
+				                            Valores =
+				                                Record.FieldValues(
+				                                    Record.SelectFields(fila, Columnas)
+				                                ),
+				
+				                            Departamento =
+				                                DepartamentoCanonico(
+				                                    ObtenerValor(
+				                                        Valores,
+				                                        PosDepartamento
+				                                    )
+				                                )
+				                        in
+				                            [
+				                                DEPARTAMENTO = Departamento,
+				                                #"Año" = anio,
+				                                LongitudTotalKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosLongitud)
+				                                    ),
+				                                NacionalTotalKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosNacional)
+				                                    ),
+				                                NacionalPavimentadaKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosNacional + 1)
+				                                    ),
+				                                NacionalNoPavimentadaKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosNacional + 2)
+				                                    ),
+				                                DepartamentalTotalKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosDepartamental)
+				                                    ),
+				                                DepartamentalPavimentadaKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosDepartamental + 1)
+				                                    ),
+				                                DepartamentalNoPavimentadaKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosDepartamental + 2)
+				                                    ),
+				                                VecinalTotalKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosVecinal)
+				                                    ),
+				                                VecinalPavimentadaKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosVecinal + 1)
+				                                    ),
+				                                VecinalNoPavimentadaKm =
+				                                    ConvertirNumero(
+				                                        ObtenerValor(Valores, PosVecinal + 2)
+				                                    )
+				                            ]
+				                ),
+				
+				            RegistrosValidos =
+				                List.Select(
+				                    Registros,
+				                    each
+				                        [DEPARTAMENTO] <> null
+				                            and [LongitudTotalKm] <> null
+				                ),
+				
+				            Resultado =
+				                Table.FromRecords(
+				                    RegistrosValidos,
+				                    type table [
+				                        DEPARTAMENTO = text,
+				                        #"Año" = Int64.Type,
+				                        LongitudTotalKm = number,
+				                        NacionalTotalKm = number,
+				                        NacionalPavimentadaKm = number,
+				                        NacionalNoPavimentadaKm = number,
+				                        DepartamentalTotalKm = number,
+				                        DepartamentalPavimentadaKm = number,
+				                        DepartamentalNoPavimentadaKm = number,
+				                        VecinalTotalKm = number,
+				                        VecinalPavimentadaKm = number,
+				                        VecinalNoPavimentadaKm = number
+				                    ]
+				                )
+				        in
+				            Resultado,
+				
+				    Libro =
+				        Excel.Workbook(
+				            Web.Contents(pURL_RedVial),
+				            null,
+				            true
+				        ),
+				
+				    SoloHojas =
+				        Table.SelectRows(
+				            Libro,
+				            each [Kind] = "Sheet"
+				        ),
+				
+				    ConAño =
+				        Table.AddColumn(
+				            SoloHojas,
+				            "AñoHoja",
+				            each
+				                try Number.FromText(
+				                    Text.Trim(Text.From([Item]))
+				                )
+				                otherwise null,
+				            Int64.Type
+				        ),
+				
+				    HojasAnuales =
+				        Table.SelectRows(
+				            ConAño,
+				            each
+				                [AñoHoja] <> null
+				                    and [AñoHoja] >= 2010
+				                    and [AñoHoja] <= 2025
+				                    and [Item] <> "2023"
+				        ),
+				
+				    TablasTransformadas =
+				        List.Transform(
+				            Table.ToRecords(HojasAnuales),
+				            each TransformarHoja([Data], [AñoHoja])
+				        ),
+				
+				    DatosCombinados =
+				        Table.Combine(TablasTransformadas),
+				
+				    SinDuplicados =
+				        Table.Distinct(
+				            DatosCombinados,
+				            {"Año", "DEPARTAMENTO"}
+				        )
+				in
+				    SinDuplicados
+				```
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

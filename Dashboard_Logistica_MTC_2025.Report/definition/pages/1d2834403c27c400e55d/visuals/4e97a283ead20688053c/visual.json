@@ -1,0 +1,50 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "4e97a283ead20688053c",
+  "position": {
+    "x": 303.9473684210526,
+    "y": 642.76315789473688,
+    "z": 33000,
+    "height": 48.684210526315788,
+    "width": 68.421052631578945,
+    "tabOrder": 33000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Océano",
+                    "textStyle": {
+                      "fontStyle": "italic",
+                      "fontSize": "11pt",
+                      "color": "#0d6abf"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": " Pacífico",
+                    "textStyle": {
+                      "fontStyle": "italic",
+                      "fontSize": "11pt",
+                      "color": "#0d6abf"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

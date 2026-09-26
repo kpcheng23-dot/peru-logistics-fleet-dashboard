@@ -1,0 +1,42 @@
+relationship 6fc7067c-fe1c-9ccf-5d7c-47a0e0204c8a
+	fromColumn: Fact_Empresas.DEPARTAMENTO
+	toColumn: Dim_Departamento.Departamento
+
+relationship 8ed2d8d4-ff1d-dd28-dd6e-e27955401259
+	fromColumn: Fact_ParqueVehicular.DEPARTAMENTO
+	toColumn: Dim_Departamento.Departamento
+
+relationship 42547890-6397-0659-1e58-92cbcb1fdb98
+	fromColumn: Fact_RedVial.DEPARTAMENTO
+	toColumn: Dim_Departamento.Departamento
+
+relationship ac87821e-2750-6654-5817-5c5794a2bc55
+	fromColumn: Fact_Empresas.Año
+	toColumn: Dim_Año.Año
+
+relationship 4c9374bc-62b0-f057-ea0b-2bc6dfd146d8
+	fromColumn: Fact_ParqueVehicular.Año
+	toColumn: Dim_Año.Año
+
+relationship 8840cad7-55f4-2d79-fecb-153401566750
+	fromColumn: Fact_RedVial.Año
+	toColumn: Dim_Año.Año
+
+relationship 8881efa9-2429-46eb-8df9-97a2a68fd523
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Fact_Flota_2025.FECHA_RESOLUCION
+	toColumn: LocalDateTable_361bd888-6de8-4249-87b4-240041b49164.Date
+
+relationship 052f4af3-8847-4a7e-a8b1-41d218a53985
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Fact_Flota_2025.FECHA_CORTE
+	toColumn: LocalDateTable_187259a4-1bcd-48fe-a193-8fde6cf29b01.Date
+
+relationship b660ee9e-193f-4ee4-0a81-155d0bf5f5ee
+	fromColumn: Fact_Flota_2025.DEPARTAMENTO
+	toColumn: Dim_Departamento.Departamento
+
+relationship c4699801-7eca-1dfb-eef1-2523b7ac425d
+	fromColumn: Fact_Flota_2025.Año
+	toColumn: Dim_Año.Año
+

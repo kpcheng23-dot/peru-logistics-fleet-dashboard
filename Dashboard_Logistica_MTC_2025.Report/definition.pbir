@@ -1,0 +1,8 @@
+{
+  "version": "4.0",
+  "datasetReference": {
+    "byPath": {
+      "path": "../Dashboard_Logistica_MTC_2025.SemanticModel"
+    }
+  }
+}

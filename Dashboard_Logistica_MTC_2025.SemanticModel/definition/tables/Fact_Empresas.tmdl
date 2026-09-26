@@ -1,0 +1,68 @@
+table Fact_Empresas
+	lineageTag: 31a8c82f-74dc-431b-b860-ab6dacbf5798
+
+	measure 'Total empresas autorizadas' = VAR AnioEvaluado = MAX('Dim_Año'[Año]) RETURN CALCULATE(SUM(Fact_Empresas[Empresas Autorizadas]), KEEPFILTERS('Dim_Año'[Año] = AnioEvaluado))
+		formatString: #,0
+		lineageTag: aa16e00e-1c47-47f4-bc22-93e093665f41
+
+	measure 'Etiqueta empresas extremos' =
+			
+			VAR AnioActual =
+			    SELECTEDVALUE('Dim_Año'[Año])
+			RETURN
+			    IF(
+			        AnioActual IN { 2016, 2025 },
+			        [Total empresas autorizadas],
+			        BLANK()
+			    )
+		formatString: #,0
+		lineageTag: 56f86075-739c-421a-8db8-478512883f63
+
+	column DEPARTAMENTO
+		dataType: string
+		lineageTag: f0c22d7e-af05-4c56-a44f-619239f5b272
+		summarizeBy: none
+		sourceColumn: DEPARTAMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año
+		dataType: int64
+		formatString: 0
+		lineageTag: de17339b-1eed-41ed-9470-e6286a66c088
+		summarizeBy: none
+		sourceColumn: Año
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Empresas Autorizadas'
+		dataType: int64
+		formatString: 0
+		lineageTag: 82e3317c-c3a5-449f-952d-57278b733b5b
+		summarizeBy: sum
+		sourceColumn: Empresas Autorizadas
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact_Empresas = m
+		mode: import
+		source =
+				let
+				    Origen = Excel.Workbook(Web.Contents(pURL_Empresas), null, true),
+				    C.1.2.4_Sheet = Origen{[Item="C.1.2.4",Kind="Sheet"]}[Data],
+				    #"Filas superiores quitadas" = Table.Skip(C.1.2.4_Sheet,3),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(#"Filas superiores quitadas", [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"DEPARTAMENTO", type text}, {"2016", Int64.Type}, {"2017", Int64.Type}, {"2018", Int64.Type}, {"2019", Int64.Type}, {"2020", Int64.Type}, {"2021", Int64.Type}, {"2022", Int64.Type}, {"2023", Int64.Type}, {"2024", Int64.Type}, {"2025", Int64.Type}, {"Column12", type any}, {"Column13", type any}, {"Column14", type any}, {"Column15", type any}, {"Column16", type any}, {"Column17", type any}, {"Column18", type any}, {"Column19", type any}, {"Column20", type any}, {"Column21", type any}}),
+				    #"Otras columnas con anulación de dinamización" = Table.UnpivotOtherColumns(#"Tipo cambiado", {"DEPARTAMENTO"}, "Atributo", "Valor"),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Otras columnas con anulación de dinamización",{{"Atributo", "Año"}, {"Valor", "Empresas Autorizadas"}}),
+				    #"Filas filtradas" = Table.SelectRows(#"Columnas con nombre cambiado", each ([DEPARTAMENTO] <> "TOTAL")),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Filas filtradas",{{"Año", Int64.Type}, {"Empresas Autorizadas", Int64.Type}}),
+				    #"Valor reemplazado" = Table.ReplaceValue(#"Tipo cambiado1","Cuzco","Cusco",Replacer.ReplaceText,{"DEPARTAMENTO"}),
+				    #"Valor reemplazado1" = Table.ReplaceValue(#"Valor reemplazado","Ancash","Áncash",Replacer.ReplaceText,{"DEPARTAMENTO"})
+				in
+				    #"Valor reemplazado1"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

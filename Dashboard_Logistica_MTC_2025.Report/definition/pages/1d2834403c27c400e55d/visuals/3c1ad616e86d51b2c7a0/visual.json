@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "3c1ad616e86d51b2c7a0",
+  "position": {
+    "x": 627.741935483871,
+    "y": 667.09677419354841,
+    "z": 39000,
+    "height": 41.44736842105263,
+    "width": 73.026315789473685,
+    "tabOrder": 39000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Bolivia",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#094780"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

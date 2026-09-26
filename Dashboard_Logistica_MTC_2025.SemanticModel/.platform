@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Dashboard_Logistica_MTC_2025"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "7ca1452b-8d91-4131-b1c3-aace9b956224"
+  }
+}
